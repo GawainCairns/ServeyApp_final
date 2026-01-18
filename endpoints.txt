@@ -1,0 +1,105 @@
+--==health check endpoints==--
+GET     localhost:3000/
+GET     localhost:3000/health
+POST    localhost:3000/echo
+
+--==db endpoints==--
+GET     localhost:3000/db/health
+            response: {"status": "ok"}
+
+--==register endpoints==--
+POST    localhost:3000/auth/register
+post to the user table data for a new user.
+            body:   {"name": "", "email": "" ,"password": ""}
+POST    localhost:3000/auth/login
+            body:   {"email": "" ,"password": ""}
+            response:   { token, user: { id: user.id, name: user.name, email: user.email, role: user.role } }
+
+--==survey endpoints==--
+
+POST    localhost:3000/survey/create
+create a new survey.
+            body:   {"name": "", "discription": "", "creator": }
+            response:   {"id": , "s_code": }
+GET     localhost:3000/survey/
+Get all surveys.
+            response:   {"id": , "name": "", "discription": "", "creator": , "s_code": ""}
+GET     localhost:3000/survey/user/:id/survey
+Get all surveys for a user.
+            response:   {"id": , "name": "", "discription": "", "creator": , "s_code": ""}
+GET     localhost:3000/survey/:id
+Get a single survey by id.
+            response:   {"id": , "name": "", "discription": "", "creator": , "s_code": ""}
+PUT     localhost:3000/survey/:id
+Update a survey by id.
+            body:   {"name": "", "discription": "", "creator": }
+DELETE  localhost:3000/survey/:id
+Delete a survey by id.
+
+POST    localhost:3000/survey/:id/question
+create a new question for a survey.
+            body:   {"survey_id": "", "question": "", "type": ""}
+PUT     localhost:3000/survey/:id/question/:qid
+Update a question for a survey.
+            body:   {"question": "", "type": ""}
+GET     localhost:3000/survey/:id/question
+get all questions for a survey.
+            response:   {"survey_id": "", "question": "", "type": ""}
+GET     localhost:3000/survey/:id/question/:qid
+get a single question for a survey.
+            response:   {"survey_id": "", "question": "", "type": ""}
+
+POST    localhost:3000/survey/:id/answer
+create a new answer for a survey question.
+            body:   {"question_id": , "answer": ""}
+PUT     localhost:3000/survey/:id/answer/:aid
+Update an answer for a survey question.
+            body:   {"question_id": , "answer": ""}
+GET     localhost:3000/survey/:id/answer
+get all answers for a survey.
+GET     localhost:3000/survey/:id/answer/:aid
+get a single answer for a survey.
+
+--==admin endpoints==--
+GET     localhost:3000/user/admin/info
+return all admins' id, name and email.
+            response:   {"id": , "name": "", "email": ""}
+GET     localhost:3000/user/:id/survey
+get all surveys where creator matches user id.
+            response:   {"id": , "name": "", "discription": "", "creator": , "s_code": ""}
+GET     localhost:3000/user/:id
+get a user's name matches user id.
+            response:   {"name": ""}
+
+--==user endpoints==--
+POST    localhost:3000/admin/user
+create a new user (hash password like /auth/register).
+            body:   {"id": , "name": "", "email": "", "password": ""}
+PUT     localhost:3000/admin/user/:id
+update a user that matches the id.
+            body:   {"name": "", "email": ""}
+GET     localhost:3000/admin/user/:id
+get a single user that matches the id.
+            response:   {"id": , "name": "", "email": ""}
+GET     localhost:3000/admin/users
+get all users from the users table.
+            response:   {"id": , "name": "", "email": "", "role": ""}
+DELETE  localhost:3000/admin/user/:id
+delete a user that matches the id.
+
+--==response endpoints==--
+POST    localhost:3000/response/:id
+create a response for survey :id
+            body:   {"id": , "question_id": , "answer": "", "responder_id": }
+GET     localhost:3000/response/survey/:id
+get all responses for a survey by id
+            response:   {}
+GET     localhost:3000/response/survey/:surveyId/:responderId
+get responses by survey id and responder id
+            response:   {}
+GET     localhost:3000/response/question/:id
+get all responses for a question by id
+            response:   {}
+GET     localhost:3000/response/r_id
+get last used responder_id (0 if none)
+            response:   {}
