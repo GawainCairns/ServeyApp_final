@@ -18,12 +18,23 @@
 html,body { height:100%; }
 body {
 	margin: 0;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 	background: var(--color-bg);
 	color: var(--color-text);
 	-webkit-font-smoothing:antialiased;
 	-moz-osx-font-smoothing:grayscale;
 	line-height: 1.45;
+}
+
+/* Make main page containers grow to push footer to bottom */
+body > main,
+body > .container,
+body > .login-container,
+body > .register-container {
+	flex: 1 0 auto;
 }
 
 /* Accessible focus outline used across controls */
