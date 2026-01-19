@@ -10,8 +10,19 @@
 	<div id="site-header"></div>
 
 	<main class="container">
-		<h1>Respond</h1>
-		<p>Respond to a survey placeholder.</p>
+		<h1 id="servey-name">Respond</h1>
+		<p id="servey-desc">Loading survey...</p>
+
+		<div id="respond-container">
+			<form id="respond-form">
+				<!-- Questions will be inserted here -->
+				<div id="questions"></div>
+				<div class="form-actions">
+					<button type="submit" id="submit-responses">Submit Responses</button>
+				</div>
+			</form>
+			<div id="respond-message" aria-live="polite"></div>
+		</div>
 	</main>
 
 	<div id="site-footer"></div>
@@ -20,6 +31,7 @@
 	<script src="../js/utils/states.js"></script>
 	<script src="../js/utils/header.js"></script>
 	<script src="../js/utils/footer.js"></script>
+	<script src="../js/respond.js"></script>
 </body>
 </html>
 
