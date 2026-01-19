@@ -8,17 +8,53 @@
 </head>
 <body>
 	<div id="site-header"></div>
-
 	<main class="container">
-		<h1>Dashboard</h1>
-		<p>User dashboard placeholder.</p>
+		<!-- Page header / user summary -->
+		<section class="site-header">
+			<div class="card">
+				<div class="card-header">
+					<div>
+						<h1>Dashboard</h1>
+						<div class="card-sub" id="welcome-msg">Your surveys at a glance</div>
+					</div>
+				</div>
+				<div id="user-card-body" class="row">
+					<div class="col card" id="user-info-card">
+						<div class="card-title">User Info</div>
+						<div id="user-info" class="card-sub">Loading user...</div>
+					</div>
+					<div class="col">
+						<div class="card">
+							<div class="card-header">
+								<div class="card-title">Actions</div>
+								<div>
+									<button id="create-survey-btn" class="btn btn-primary">+ Create Survey</button>
+									<button id="toggle-view" class="btn btn-outline">Switch to List</button>
+								</div>
+							</div>
+							<div class="card-sub">Create a new survey or switch how your surveys are displayed.</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Surveys area -->
+		<section style="margin-top:18px;">
+			<div id="surveys-root">
+				<div id="surveys" class="row"></div>
+				<div id="surveys-empty" class="card" style="display:none; margin-top:12px;">No surveys found.</div>
+			</div>
+		</section>
 	</main>
 
 	<div id="site-footer"></div>
 
+	<script src="../js/utils/session.js"></script>
 	<script src="../js/utils/states.js"></script>
 	<script src="../js/utils/header.js"></script>
 	<script src="../js/utils/footer.js"></script>
+	<script src="../js/dashboard.js"></script>
 </body>
 </html>
 
