@@ -40,11 +40,12 @@
 			}
 
 			const data = await res.json();
-			if(data.token){
-				localStorage.setItem('token', data.token);
-			}
-			if(data.user){
-				localStorage.setItem('user', JSON.stringify(data.user));
+			// Persist session (token + user). Prefer Session helper if available.
+			if(window.Session && typeof Session.createSession === 'function'){
+				Session.createSession(data.user, data.token);
+			}else{
+				if(data.token) localStorage.setItem('token', data.token);
+				if(data.user) localStorage.setItem('user', JSON.stringify(data.user));
 			}
 
 			// Redirect after login. Adjust target as desired.

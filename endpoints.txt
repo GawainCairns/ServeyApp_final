@@ -60,7 +60,7 @@ get all answers for a survey.
 GET     localhost:3000/survey/:id/answer/:aid
 get a single answer for a survey.
 
---==admin endpoints==--
+--==user endpoints==--
 GET     localhost:3000/user/admin/info
 return all admins' id, name and email.
             response:   {"id": , "name": "", "email": ""}
@@ -69,9 +69,14 @@ get all surveys where creator matches user id.
             response:   {"id": , "name": "", "discription": "", "creator": , "s_code": ""}
 GET     localhost:3000/user/:id
 get a user's name matches user id.
-            response:   {"name": ""}
+            response:   {"name": "","email": ""}
+PUT     localhost:3000/user/:id/update
+update allowed user fields (name, email, role)
+            body:   {"name": "", "email": ""}
+DELETE  localhost:3000/user/:id/del
+delete a user by id
 
---==user endpoints==--
+--==admin endpoints==--
 POST    localhost:3000/admin/user
 create a new user (hash password like /auth/register).
             body:   {"id": , "name": "", "email": "", "password": ""}

@@ -1,20 +1,19 @@
 // Profile page script: fetch user, allow edit name/email/password, delete account
 (function(){
-    const token = localStorage.getItem('token');
-    const stored = localStorage.getItem('user');
     const profileMsg = document.getElementById('profileMsg');
 
-    if(!stored){
+    const token = (window.Session && typeof Session.getToken === 'function') ? Session.getToken() : localStorage.getItem('token');
+    const current = (window.Session && typeof Session.getUser === 'function') ? Session.getUser() : JSON.parse(localStorage.getItem('user')||'null');
+
+    if(!current){
         window.location.href = '../html/login.html';
         return;
     }
 
-    const current = JSON.parse(stored);
     const userId = current.id;
 
     const nameEl = document.getElementById('name');
     const emailEl = document.getElementById('email');
-    const passwordEl = document.getElementById('password');
 
     const deleteBtn = document.getElementById('deleteAccount');
 
@@ -27,16 +26,19 @@
 
     async function fetchUser(){
         try{
-            const res = await fetch('http://localhost:3000/admin/user/' + encodeURIComponent(userId), {
+            const res = await fetch('http://localhost:3000/user/' + encodeURIComponent(userId), {
                 headers: token ? { 'Authorization': 'Bearer ' + token } : {}
             });
             if(!res.ok) throw new Error('Unable to fetch user');
             const data = await res.json();
             nameEl.value = data.name || '';
             emailEl.value = data.email || '';
-            passwordEl.value = '';
-            // update localStorage user copy
-            localStorage.setItem('user', JSON.stringify({ id: data.id, name: data.name, email: data.email }));
+            // update stored user copy (prefer Session helper)
+            if(window.Session && typeof Session.createSession === 'function'){
+                Session.createSession({ id: data.id, name: data.name, email: data.email }, token);
+            }else{
+                localStorage.setItem('user', JSON.stringify({ id: data.id, name: data.name, email: data.email }));
+            }
         }catch(err){
             console.error(err);
             showMsg('Failed to load profile', true);
@@ -68,11 +70,9 @@
         const payload = {};
         if(field === 'name') payload.name = input.value.trim();
         if(field === 'email') payload.email = input.value.trim();
-        if(field === 'password') payload.password = input.value; // allow empty? We'll skip if empty
-        if(field === 'password' && !payload.password){ showMsg('Enter a new password to change it', true); return; }
 
         try{
-            const res = await fetch('http://localhost:3000/admin/user/' + encodeURIComponent(userId), {
+            const res = await fetch('http://localhost:3000/user/' + encodeURIComponent(userId) + '/update', {
                 method: 'PUT',
                 headers: Object.assign({ 'Content-Type': 'application/json' }, token ? { 'Authorization': 'Bearer ' + token } : {}),
                 body: JSON.stringify(payload)
@@ -98,13 +98,13 @@
         const action = btn.getAttribute('data-action');
         const field = btn.getAttribute('data-field');
         if(action === 'edit') setEditing(field, true);
-        if(action === 'cancel'){
+            if(action === 'cancel'){
             setEditing(field, false);
-            // restore value from stored user
-            const storedUser = JSON.parse(localStorage.getItem('user')||'null') || {};
+            // restore value from stored user (prefer Session helper)
+            const storedUser = (window.Session && typeof Session.getUser === 'function') ? (Session.getUser() || {}) : (JSON.parse(localStorage.getItem('user')||'null') || {});
             if(field === 'name') nameEl.value = storedUser.name || '';
             if(field === 'email') emailEl.value = storedUser.email || '';
-            if(field === 'password') passwordEl.value = '';
+                
         }
         if(action === 'save') saveField(field);
     });
@@ -114,14 +114,18 @@
             const ok = window.confirm('Are you sure you want to delete your account? This action cannot be undone.');
             if(!ok) return;
             try{
-                const res = await fetch('http://localhost:3000/admin/user/' + encodeURIComponent(userId), {
+                const res = await fetch('http://localhost:3000/user/' + encodeURIComponent(userId) + '/del', {
                     method: 'DELETE',
                     headers: token ? { 'Authorization': 'Bearer ' + token } : {}
                 });
                 if(!res.ok) throw new Error('Delete failed');
-                // clear local data and redirect
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
+                // clear stored session and redirect
+                if(window.Session && typeof Session.clearSession === 'function'){
+                    Session.clearSession();
+                }else{
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                }
                 showMsg('Account deleted');
                 setTimeout(()=>{ window.location.href = '../html/index.html'; }, 900);
             }catch(err){
