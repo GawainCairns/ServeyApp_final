@@ -2,7 +2,7 @@
 (function(){
   'use strict';
 
-  const ADMIN_ENDPOINT = (window.location.origin || '') + '/user/admin/info';
+  const ADMIN_ENDPOINT = 'localhost:3000/user/admin/info';
   const MAX_ADMINS = 2;
 
   function createEl(tag, cls, text) {

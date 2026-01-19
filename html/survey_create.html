@@ -11,7 +11,56 @@
 
 	<main class="container">
 		<h1>Create Survey</h1>
-		<p>Survey creation placeholder.</p>
+		<section id="create-survey-section">
+			<form id="createSurveyForm">
+				<div class="form-row">
+					<label for="surveyName">Survey Name</label>
+					<input id="surveyName" name="name" required />
+				</div>
+				<div class="form-row">
+					<label for="surveyDescription">Description</label>
+					<textarea id="surveyDescription" name="description" rows="3"></textarea>
+				</div>
+				<input id="surveyCreator" name="creator" type="hidden" />
+				<div class="form-row">
+					<label>Creator</label>
+					<span id="surveyCreatorDisplay">(not logged in)</span>
+				</div>
+				<button type="submit">Create Survey</button>
+			</form>
+		</section>
+
+		<section id="survey-management" style="display:none;">
+			<h2 id="createdSurveyTitle"></h2>
+			<p id="createdSurveyInfo"></p>
+
+			<hr />
+			<h3>Add Question</h3>
+			<form id="createQuestionForm">
+				<div class="form-row">
+					<label for="questionText">Question</label>
+					<input id="questionText" name="question" required />
+				</div>
+				<div class="form-row">
+					<label for="questionType">Type</label>
+					<select id="questionType" name="type">
+						<option value="text">Text</option>
+						<option value="boolean">Boolean</option>
+						<option value="multiple">Multiple Choice</option>
+					</select>
+				</div>
+				<div id="optionsArea" style="display:none;">
+					<label>Options</label>
+					<div id="optionsList"></div>
+					<button id="addOptionBtn" type="button">Add Option</button>
+				</div>
+				<button type="submit">Add Question</button>
+			</form>
+
+			<hr />
+			<h3>Questions</h3>
+			<ul id="questionsList"></ul>
+		</section>
 	</main>
 
 	<div id="site-footer"></div>
@@ -19,6 +68,7 @@
 	<script src="../js/utils/states.js"></script>
 	<script src="../js/utils/header.js"></script>
 	<script src="../js/utils/footer.js"></script>
+	<script src="../js/survey_create.js"></script>
 </body>
 </html>
 

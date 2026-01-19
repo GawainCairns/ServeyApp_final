@@ -16,7 +16,6 @@ POST    localhost:3000/auth/login
             response:   { token, user: { id: user.id, name: user.name, email: user.email, role: user.role } }
 
 --==survey endpoints==--
-
 POST    localhost:3000/survey/create
 create a new survey.
             body:   {"name": "", "discription": "", "creator": }
