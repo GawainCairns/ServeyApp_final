@@ -94,10 +94,10 @@ body > .register-container
 .form input[type="password"],
 .form select,
 .form textarea 
-{ width:100%; 
+{ 	width:100%; 
 	padding:10px 12px; 
 	border-radius:8px; 
-	border:1px solid rgba(16,24,40,0.08);
+	border:1px solid rgba(16, 24, 40, 0.205);
 	background: transparent; 
 	color:var(--color-text);}
 .form textarea 
@@ -197,17 +197,18 @@ body > .register-container
 /* -------- Auth (login / register) -------- */
 .login-container,
 .register-container 
-{	margin: 48px auto;
+{ 	margin: 48px auto;
 	padding: 24px;
-	border: 1px solid rgba(16,24,40,0.04);
+	border: 1px solid rgba(16, 24, 40, 0.123);
 	border-radius: 8px;
 	background: var(--color-surface);
-	max-width: 720px;
+	max-width: 600px;
+	width: min(500px, 80%);
 	box-shadow: var(--shadow-sm); }
 .login-container 
-{ max-width: 720px; margin-top: 60px; }
+{ max-width: 600px; margin-top: 60px; }
 .register-container 
-{ max-width: 720px; }
+{ max-width: 600px; }
 .form-group 
 { margin-bottom: 12px; }
 .form-group label 
