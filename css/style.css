@@ -1,28 +1,28 @@
 /* Global theme variables (change these to update the site's colors) */
 :root {
     /* Primary colors */
-    --color-primary: #a200ff; /* main brand color */
+    --color-primary: #a776fc; /* main brand color */
     --color-primary-contrast: #ffffff; /* text on primary */
-    --color-primary-rgb: 30,136,229;
+    --color-primary-rgb: 124,58,237;
 
-    --color-secondary: #a04cff; /* secondary/interactive */
+    --color-secondary: #7e5abd; /* secondary/interactive */
     --color-secondary-contrast: #ffffff;
-    --color-secondary-rgb: 33,30,233;
+    --color-secondary-rgb: 126,90,189;
 
-    --color-accent: #ef3fff; /* accent for highlights */
-    --color-accent-rgb: 255,0,140;
+    --color-accent: #7C3AED; /* accent for highlights */
+    --color-accent-rgb: 124,58,237;
 
     /* Surfaces & text */
-    --color-bg: #eed7ff; /* page background */
-    --color-surface: #ffdeff; /* cards, panels */
+    --color-bg: #F9FAFB; /* page background */
+    --color-surface: #F1F5F9; /* cards, panels */
     --color-text: #000000; /* main text */
     --color-muted: rgba(0, 0, 0, 0.8); /* secondary text */
 
     /* Header / Footer (customizable) */
-    --color-header-bg: #4b1b66; /* header background - change this */
-    --color-header-text: white;
-    --color-footer-bg: #371458; /* footer background - change this */
-    --color-footer-text: white;
+    --color-header-bg: var(--color-primary); /* header background - change this */
+    --color-header-text: var(--color-primary-contrast);
+    --color-footer-bg: var(--color-secondary); /* footer background - change this */
+    --color-footer-text: var(--color-secondary-contrast);
 
     /* Semantic */
     --color-success: #28a745;
@@ -39,8 +39,8 @@
 
     /* Radius / shadows */
     --radius: 8px;
-    --shadow-sm: 0 1px 2px rgba(153, 0, 255, 0.25);
-    --shadow-md: 0 6px 18px rgba(174, 0, 255, 0.35);
+    --shadow-sm: 0 1px 2px rgb(221, 199, 255);
+    --shadow-md: 0 6px 18px rgb(221, 199, 255);
 }
 
 /* Base reset and layout helpers */

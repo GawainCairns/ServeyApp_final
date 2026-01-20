@@ -45,8 +45,75 @@ if (createSurveyForm) {
             const data = await res.json();
             currentSurveyId = data.id;
             el('createdSurveyTitle').textContent = name;
-            el('createdSurveyInfo').textContent = `ID: ${data.id}  Code: ${data.s_code || ''}`;
-            hide(el('create-survey-section'));
+            el('createdSurveyInfo').textContent = `Code: ${data.s_code || ''}`;
+
+            // Keep the survey create form visible but make fields readonly
+            const nameInput = el('surveyName');
+            const descInput = el('surveyDescription');
+            nameInput.disabled = true;
+            descInput.disabled = true;
+
+            // Convert the submit button into an Edit button that toggles to Save
+            const submitBtn = createSurveyForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                // make it a regular button so it doesn't re-submit the form
+                submitBtn.type = 'button';
+                submitBtn.textContent = 'Edit Survey';
+                submitBtn.dataset.mode = 'edit';
+
+                // remove any previous handler marker, then attach handler
+                const handler = async () => {
+                    const mode = submitBtn.dataset.mode;
+                    if (mode === 'edit') {
+                        // make fields editable
+                        nameInput.disabled = false;
+                        descInput.disabled = false;
+                        nameInput.focus();
+                        submitBtn.textContent = 'Save Survey';
+                        submitBtn.dataset.mode = 'save';
+                    } else if (mode === 'save') {
+                        const newName = nameInput.value.trim();
+                        const newDesc = descInput.value.trim();
+                        if (!newName) return showMessage('Please enter a survey name');
+                        try {
+                            const uheaders = { 'Content-Type': 'application/json' };
+                            const utoken = getToken();
+                            if (utoken) uheaders['Authorization'] = `Bearer ${utoken}`;
+
+                            const updateRes = await fetch(`${baseUrl}/survey/${currentSurveyId}`, {
+                                method: 'PUT',
+                                headers: uheaders,
+                                body: JSON.stringify({ name: newName, discription: newDesc })
+                            });
+                            if (!updateRes.ok) {
+                                // try PATCH as a fallback
+                                const fallback = await fetch(`${baseUrl}/survey/${currentSurveyId}`, {
+                                    method: 'PATCH',
+                                    headers: uheaders,
+                                    body: JSON.stringify({ name: newName, discription: newDesc })
+                                });
+                                if (!fallback.ok) throw new Error('Failed to update survey');
+                            }
+
+                            // success: lock fields again and update UI
+                            nameInput.disabled = true;
+                            descInput.disabled = true;
+                            submitBtn.textContent = 'Edit Survey';
+                            submitBtn.dataset.mode = 'edit';
+                            el('createdSurveyTitle').textContent = newName;
+                        } catch (err) {
+                            showMessage(err.message || 'Error updating survey');
+                        }
+                    }
+                };
+
+                // Ensure we don't double-bind
+                submitBtn._surveyEditHandler && submitBtn.removeEventListener('click', submitBtn._surveyEditHandler);
+                submitBtn._surveyEditHandler = handler;
+                submitBtn.addEventListener('click', handler);
+            }
+
+            // Show question management UI
             show(el('survey-management'));
             fetchQuestions();
         } catch (err) {
@@ -243,6 +310,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const cid = suser.id || suser.user_id || suser._id || null;
         if (cid) el('surveyCreator').value = cid;
         const disp = el('surveyCreatorDisplay');
-        if (disp) disp.textContent = suser.name ? `${suser.name} (id: ${cid})` : `id: ${cid}`;
+        if (disp) disp.textContent = suser.name ? `${suser.name}` : `id: ${cid}`;
     }
 });
