@@ -34,11 +34,25 @@
             nameEl.value = data.name || '';
             emailEl.value = data.email || '';
             // update stored user copy (prefer Session helper)
-            if(window.Session && typeof Session.createSession === 'function'){
-                Session.createSession({ id: data.id, name: data.name, email: data.email }, token);
-            }else{
-                localStorage.setItem('user', JSON.stringify({ id: data.id, name: data.name, email: data.email }));
-            }
+            try{
+                // Build user object, preferring role from server response but
+                // falling back to any existing stored role to avoid dropping it.
+                let existing = null;
+                if(window.Session && typeof Session.getUser === 'function'){
+                    existing = Session.getUser();
+                } else {
+                    try{ existing = JSON.parse(localStorage.getItem('user')||'null'); }catch(e){ existing = null; }
+                }
+                const userObj = { id: data.id, name: data.name, email: data.email };
+                if(data.role) userObj.role = data.role;
+                else if(existing && existing.role) userObj.role = existing.role;
+
+                if(window.Session && typeof Session.createSession === 'function'){
+                    Session.createSession(userObj, token);
+                }else{
+                    localStorage.setItem('user', JSON.stringify(userObj));
+                }
+            }catch(e){ /* ignore storage errors */ }
         }catch(err){
             console.error(err);
             showMsg('Failed to load profile', true);

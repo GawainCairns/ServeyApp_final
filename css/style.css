@@ -80,7 +80,7 @@ body > .register-container {
     margin-bottom: 28px;
 }
 .navbar .brand { display:flex; align-items:center; gap:12px; font-weight:600; color:var(--color-header-text); }
-.navbar .brand .logo { width:34px; height:34px; border-radius:6px; background:var(--color-primary); }
+.navbar .brand .logo { width:34px; height:34px; border-radius:6px; background:var(--color-accent); }
 .navbar .nav-links { display:flex; gap:10px; align-items:center; }
 .navbar .nav-links a { color:var(--color-header-text); text-decoration:none; padding:8px 10px; border-radius:6px; }
 .navbar .nav-links a:hover { background: var(--primary-hover-bg); }
