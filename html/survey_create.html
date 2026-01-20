@@ -11,55 +11,77 @@
 
 	<main class="container">
 		<h1>Create Survey</h1>
+
 		<section id="create-survey-section">
-			<form id="createSurveyForm">
-				<div class="form-row">
-					<label for="surveyName">Survey Name</label>
-					<input id="surveyName" name="name" required />
+			<div class="card">
+				<div class="card-header">
+					<div class="card-title">New Survey</div>
+					<div class="card-sub">Create a survey to collect responses</div>
 				</div>
-				<div class="form-row">
-					<label for="surveyDescription">Description</label>
-					<textarea id="surveyDescription" name="description" rows="3"></textarea>
+				<div class="card-body">
+					<form id="createSurveyForm" class="form">
+						<div class="field">
+							<label for="surveyName">Survey Name</label>
+							<input id="surveyName" name="name" type="text" required />
+						</div>
+						<div class="field">
+							<label for="surveyDescription">Description</label>
+							<textarea id="surveyDescription" name="description" rows="3"></textarea>
+						</div>
+						<input id="surveyCreator" name="creator" type="hidden" />
+						<div class="field">
+							<label>Creator</label>
+							<span id="surveyCreatorDisplay">(not logged in)</span>
+						</div>
+						<div class="actions">
+							<button type="submit" class="btn btn-primary">Create Survey</button>
+						</div>
+					</form>
 				</div>
-				<input id="surveyCreator" name="creator" type="hidden" />
-				<div class="form-row">
-					<label>Creator</label>
-					<span id="surveyCreatorDisplay">(not logged in)</span>
-				</div>
-				<button type="submit">Create Survey</button>
-			</form>
+			</div>
 		</section>
 
-		<section id="survey-management" style="display:none;">
-			<h2 id="createdSurveyTitle"></h2>
-			<p id="createdSurveyInfo"></p>
+		<section id="survey-management" style="display:none; margin-top:16px;">
+			<div class="card">
+				<div class="card-header">
+					<div>
+						<div class="card-title" id="createdSurveyTitle"></div>
+						<div class="card-sub" id="createdSurveyInfo"></div>
+					</div>
+					<div></div>
+				</div>
+				<div class="card-body">
+					<h3>Add Question</h3>
+					<form id="createQuestionForm" class="form">
+						<div class="field">
+							<label for="questionText">Question</label>
+							<input id="questionText" name="question" type="text" required />
+						</div>
+						<div class="field">
+							<label for="questionType">Type</label>
+							<select id="questionType" name="type">
+								<option value="text">Text</option>
+								<option value="boolean">Boolean</option>
+								<option value="multiple">Multiple Choice</option>
+							</select>
+						</div>
+						<div id="optionsArea" style="display:none;">
+							<label>Options</label>
+							<div id="optionsList"></div>
+							<div style="margin-top:8px;">
+								<button id="addOptionBtn" type="button" class="btn btn-outline">Add Option</button>
+							</div>
+						</div>
+						<div class="actions">
+							<button type="submit" class="btn btn-primary">Add Question</button>
+						</div>
+					</form>
 
-			<hr />
-			<h3>Add Question</h3>
-			<form id="createQuestionForm">
-				<div class="form-row">
-					<label for="questionText">Question</label>
-					<input id="questionText" name="question" required />
+					<hr />
+					<h3>Questions</h3>
+					<ul id="questionsList"></ul>
 				</div>
-				<div class="form-row">
-					<label for="questionType">Type</label>
-					<select id="questionType" name="type">
-						<option value="text">Text</option>
-						<option value="boolean">Boolean</option>
-						<option value="multiple">Multiple Choice</option>
-					</select>
-				</div>
-				<div id="optionsArea" style="display:none;">
-					<label>Options</label>
-					<div id="optionsList"></div>
-					<button id="addOptionBtn" type="button">Add Option</button>
-				</div>
-				<button type="submit">Add Question</button>
-			</form>
-
-			<hr />
-			<h3>Questions</h3>
-			<ul id="questionsList"></ul>
+			</div>
 		</section>
 	</main>
 

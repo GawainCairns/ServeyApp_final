@@ -77,6 +77,7 @@ body > .register-container {
     background: linear-gradient(90deg, var(--color-header-bg), var(--color-footer-bg));
     border-bottom: 1px solid var(--border-weak);
     box-shadow: var(--shadow-sm);
+    margin-bottom: 28px;
 }
 .navbar .brand { display:flex; align-items:center; gap:12px; font-weight:600; color:var(--color-header-text); }
 .navbar .brand .logo { width:34px; height:34px; border-radius:6px; background:var(--color-primary); }
@@ -93,9 +94,9 @@ body > .register-container {
 
 /* -------- Header -------- */
 .site-header {
-    padding: 28px 20px;
-    background: var(--color-header-bg);
-    color: var(--color-header-text);
+    padding: 0px 0px;
+    background: var(--color-surface);
+    color: var(--color-text);
     text-align: left;
 }
 .site-header h1 { margin: 0 0 6px 0; font-size: 1.6rem; }
@@ -137,6 +138,18 @@ body > .register-container {
 }
 .form .help { font-size:0.85rem; color:var(--color-muted); }
 .form .actions { display:flex; gap:8px; align-items:center; }
+
+/* Align form action buttons to the end for a cleaner layout */
+.form .actions { justify-content: flex-end; }
+
+/* Option input rows used by question creator */
+.option-row { display:flex; gap:8px; align-items:center; margin-top:8px; }
+.option-row .option-input { flex:1; padding:8px 10px; border-radius:6px; border:1px solid var(--border); }
+.option-row button { padding:6px 8px; border-radius:6px; border:0; background:transparent; cursor:pointer; font-weight:700; color:var(--color-danger); }
+
+/* Small overrides to make plain <button> elements visually consistent */
+.form button { min-width:90px; }
+.btn-outline { background:transparent; border:1px solid rgba(0,0,0,0.08); color:var(--color-text); }
 .btn {
     display:inline-flex;
     align-items:center;
