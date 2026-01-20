@@ -18,7 +18,7 @@
 		const brand = createEl('div', 'brand');
 		const logo = createEl('div', 'logo');
 		brand.appendChild(logo);
-		const title = createEl('div', '', 'Survey System');
+		const title = createEl('div', '', 'SurveyApp');
 		brand.appendChild(title);
 		container.appendChild(brand);
 
