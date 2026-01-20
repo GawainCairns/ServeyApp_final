@@ -10,30 +10,47 @@
 	<div id="site-header"></div>
 
 	<main class="container">
-		<section id="profile-section" class="card">
-			<form id="profileForm">
-				<div class="form-row">
-					<h1>Profile</h1>
-					<label>Name</label>
-					<input id="name" type="text" disabled />
-					<button type="button" class="btn small" data-action="edit" data-field="name">Edit</button>
-					<button type="button" class="btn small" data-action="save" data-field="name" style="display:none">Save</button>
-					<button type="button" class="btn small" data-action="cancel" data-field="name" style="display:none">Cancel</button>
+		<section id="profile-section">
+			<div class="card">
+				<div class="card-header">
+					<div class="card-title">Profile</div>
+					<div class="card-sub">Manage your account details</div>
 				</div>
-				<div class="form-row">
-					<label>Email</label>
-					<input id="email" type="email" disabled />
-					<button type="button" class="btn small" data-action="edit" data-field="email">Edit</button>
-					<button type="button" class="btn small" data-action="save" data-field="email" style="display:none">Save</button>
-					<button type="button" class="btn small" data-action="cancel" data-field="email" style="display:none">Cancel</button>
+				<div class="card-body">
+					<form id="profileForm" class="form">
+						<h2 style="margin:0 0 8px 0;">Account</h2>
+
+						<div class="field">
+							<label for="name">Name</label>
+							<div style="display:flex; gap:8px; align-items:center;">
+								<input id="name" type="text" disabled />
+								<div class="inline-actions">
+									<button type="button" class="btn small" data-action="edit" data-field="name">Edit</button>
+									<button type="button" class="btn small" data-action="save" data-field="name" style="display:none">Save</button>
+									<button type="button" class="btn small" data-action="cancel" data-field="name" style="display:none">Cancel</button>
+								</div>
+							</div>
+						</div>
+
+						<div class="field">
+							<label for="email">Email</label>
+							<div style="display:flex; gap:8px; align-items:center;">
+								<input id="email" type="email" disabled />
+								<div class="inline-actions">
+									<button type="button" class="btn small" data-action="edit" data-field="email">Edit</button>
+									<button type="button" class="btn small" data-action="save" data-field="email" style="display:none">Save</button>
+									<button type="button" class="btn small" data-action="cancel" data-field="email" style="display:none">Cancel</button>
+								</div>
+							</div>
+						</div>
+
+						<div class="actions" style="margin-top:12px;">
+							<button id="deleteAccount" type="button" class="btn btn-danger">Delete Account</button>
+						</div>
+						<div id="profileMsg" class="info"></div>
+					</form>
 				</div>
-				<div class="form-row">
-				</div>
-				<div class="form-row">
-					<button id="deleteAccount" type="button" class="btn danger">Delete Account</button>
-				</div>
-				<div id="profileMsg" class="info"></div>
-			</form>
+			</div>
 		</section>
 	</main>
 

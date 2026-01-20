@@ -161,6 +161,13 @@ body > .register-container {
     cursor:pointer;
     font-weight:600;
 }
+.btn.small { padding:6px 8px; font-size:0.9rem; border-radius:6px; }
+.btn.btn-danger, .btn.danger { background:var(--color-danger); color:var(--color-primary-contrast); }
+.btn.btn-danger:hover, .btn.danger:hover { opacity:0.95; }
+
+/* Inline small action buttons next to inputs */
+.inline-actions { display:flex; gap:6px; }
+.inline-actions .btn { padding:6px 8px; }
 .btn-primary { background:var(--color-primary); color:var(--color-primary-contrast); }
 .btn-secondary { background:var(--color-secondary); color:var(--color-secondary-contrast); }
 .btn-outline { background:transparent; border:1px solid var(--border); color:var(--color-text); }
