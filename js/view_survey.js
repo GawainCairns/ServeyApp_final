@@ -1,4 +1,4 @@
-// Respond page script
+// View Survey page script
 // Fetch survey by s_code, render questions and answers, submit responses
 
 (function () {
@@ -16,7 +16,7 @@
 	// Get s_code from query string ?code= or fallback to example code
 	function getCodeFromUrl() {
 		const params = new URLSearchParams(window.location.search);
-		return params.get('code') || '09e6Nj1597';
+		return params.get('code');
 	}
 
 	async function fetchJson(url, opts) {
@@ -137,64 +137,6 @@
 				// attach question id as data attribute for submit on the card
 				card.dataset.qid = q.id;
 				el.questions.appendChild(card);
-			});
-
-			// handle submit
-			el.form.addEventListener('submit', async (ev) => {
-				ev.preventDefault();
-				try {
-					if (el.submit) { el.submit.disabled = true; el.submit.textContent = 'Submitting...'; }
-					showMessage('Submitting responses...', false);
-					// get next responder id
-					const r = await fetchJson(`${API_BASE}/response/r_id`);
-					const lastR = (r && r.r_id !== undefined) ? r.r_id : (r || 0);
-					const responderId = Number(lastR) + 1;
-
-					// collect responses
-					const formData = new FormData(el.form);
-					const posts = [];
-					// for each question element
-					const qNodes = el.questions.querySelectorAll('[data-qid]');
-					qNodes.forEach((qn) => {
-						const qid = qn.dataset.qid;
-						const name = `q_${qid}`;
-						const value = formData.get(name);
-						// only post if there is an answer
-						if (value !== null && value !== undefined && String(value).trim() !== '') {
-							// build body
-							const body = {
-								id: 0,
-								question_id: Number(qid),
-								answer: String(value),
-								responder_id: responderId,
-							};
-							posts.push(body);
-						}
-					});
-
-					if (posts.length === 0) {
-						showMessage('Please answer at least one question before submitting.', true);
-						if (el.submit) { el.submit.disabled = false; el.submit.textContent = 'Submit Responses'; }
-						return;
-					}
-
-					// send posts sequentially
-					for (const p of posts) {
-						await fetchJson(`${API_BASE}/response/${s.id}`, {
-							method: 'POST',
-							headers: { 'Content-Type': 'application/json' },
-							body: JSON.stringify(p),
-						});
-					}
-
-					showMessage('Responses submitted. Thank you!', false);
-					el.form.reset();
-					if (el.submit) { el.submit.disabled = false; el.submit.textContent = 'Submit Responses'; }
-				} catch (err) {
-					console.error(err);
-					showMessage('Failed to submit responses: ' + err.message, true);
-					if (el.submit) { el.submit.disabled = false; el.submit.textContent = 'Submit Responses'; }
-				}
 			});
 
 		} catch (err) {

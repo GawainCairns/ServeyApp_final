@@ -95,7 +95,9 @@
 
 		const view = createEl('button', 'btn', 'View');
 		view.addEventListener('click', ()=>{
-			window.location.href = origin + '/html/respond.html?id=' + encodeURIComponent(s.id);
+			// redirect to the view survey page; prefer survey code if available
+			const code = s.s_code || s.code || s.id;
+			window.location.href = origin + '/html/view_survey.html?code=' + encodeURIComponent(code);
 		});
 
 		const dataBtn = createEl('button', 'btn btn-secondary', 'View Data');
