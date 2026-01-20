@@ -109,8 +109,8 @@ body > .register-container {
     padding: 16px;
     box-shadow: var(--shadow-md);
     border: 1px solid rgba(16,24,40,0.04);
+    margin-bottom: 28px;
 }
-.card + .card { margin-top: 12px; }
 .card-header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px; }
 .card-title { font-weight:600; color:var(--color-text); }
 .card-sub { color:var(--color-muted); font-size:0.95rem; }
@@ -150,6 +150,14 @@ body > .register-container {
 /* Small overrides to make plain <button> elements visually consistent */
 .form button { min-width:90px; }
 .btn-outline { background:transparent; border:1px solid rgba(0,0,0,0.08); color:var(--color-text); }
+
+/* Dashboard specific grid for survey cards */
+.dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px; align-items:start; }
+.dashboard-grid > .card { width:100%; }
+
+/* Card actions area (buttons inside a card) */
+.card .actions { display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
+.card .card-header { align-items: center; justify-content: space-between; }
 .btn {
     display:inline-flex;
     align-items:center;

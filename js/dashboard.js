@@ -55,14 +55,26 @@
 			return { survey: s, questions: qCount, responses: rCount };
 		}));
 
-		surveysData = enriched;
-		renderSurveys();
+			surveysData = enriched;
+			updateStats();
+			renderSurveys();
 	}
+
+		function updateStats(){
+			const totalSurveys = surveysData.length || 0;
+			const totalQuestions = surveysData.reduce((acc,i)=> acc + (i.questions || 0), 0);
+			const totalResponses = surveysData.reduce((acc,i)=> acc + (i.responses || 0), 0);
+			const elSurveys = document.getElementById('stat-surveys');
+			const elQuestions = document.getElementById('stat-questions');
+			const elResponses = document.getElementById('stat-responses');
+			if(elSurveys) elSurveys.textContent = totalSurveys;
+			if(elQuestions) elQuestions.textContent = totalQuestions;
+			if(elResponses) elResponses.textContent = totalResponses;
+		}
 
 	function buildCard(item){
 		const s = item.survey;
 		const card = createEl('div', 'card', undefined);
-		card.style.minWidth = '220px';
 
 		const header = createEl('div', 'card-header');
 		const title = createEl('div', 'card-title', s.name || 'Untitled survey');

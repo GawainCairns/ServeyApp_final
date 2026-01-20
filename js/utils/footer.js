@@ -32,15 +32,14 @@
     footer.appendChild(container);
 
     const left = createEl('div', 'col');
-    const title = createEl('div', 'card-title', 'Survey System — Features');
+    const title = createEl('div', 'card-title', 'Features');
     left.appendChild(title);
     const feat = createEl('ul', 'feature-list');
     const features = [
-      'Create and publish surveys',
-      'Share surveys via code or link',
-      'Collect and view responses',
-      'Basic analytics and export',
-      'User and admin management'
+      'Create surveys',
+      'Share surveys',
+      'Collect responses',
+      'Basic analytics',
     ];
     features.forEach(f => {
       const li = createEl('li', '', f);
@@ -69,7 +68,7 @@
     container.appendChild(right);
 
     const small = createEl('div', 'col');
-    const copyright = createEl('div', 'card-sub', `© ${new Date().getFullYear()} Survey System`);
+    const copyright = createEl('div', 'card-sub', `© ${new Date().getFullYear()} SurveyApp`);
     small.appendChild(copyright);
     container.appendChild(small);
 
