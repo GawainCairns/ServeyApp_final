@@ -81,7 +81,8 @@ body > .register-container {
     margin-bottom: 28px;
 }
 .navbar .brand { display:flex; align-items:center; gap:12px; font-weight:600; color:var(--color-header-text); }
-.navbar .brand .logo { width:34px; height:34px; border-radius:6px; background:var(--color-accent); }
+.navbar .brand .logo { width:34px; height:34px; border-radius:6px; display:flex; align-items:center; justify-content:center; background:transparent; }
+.navbar .brand .logo svg, .site-logo-svg { width:100%; height:100%; display:block; }
 .navbar .nav-links { display:flex; gap:10px; align-items:center; }
 .navbar .nav-links a { color:var(--color-header-text); text-decoration:none; padding:8px 10px; border-radius:6px; }
 .navbar .nav-links a:hover { background: var(--primary-hover-bg); }
@@ -200,6 +201,26 @@ body > .register-container {
 
 /* Inline small action buttons next to inputs */
 .inline-actions { display:flex; gap:6px; }
+/* Make inline-action icon buttons square and keep SVGs proportionate */
+.inline-actions .btn {
+    padding: 6px;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.inline-actions .btn svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+.btn svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
 .inline-actions .btn { padding:6px 8px; }
 .btn-primary { background:var(--color-primary); color:var(--color-primary-contrast); }
 .btn-secondary { background:var(--color-secondary); color:var(--color-secondary-contrast); }
@@ -222,6 +243,30 @@ body > .register-container {
 
 /* Footer content specifics */
 .site-footer .container { display:flex; gap:22px; align-items:flex-start; padding: 18px 20px; }
+.site-footer .footer-brand { display:flex; align-items:center; gap:10px; }
+.site-footer .footer-brand .logo { width:48px; height:48px; }
+.site-footer .footer-brand .logo svg, .site-footer .site-logo-svg { width:100%; height:100%; display:block; }
+
+/* Footer main layout */
+.footer-main { display:flex; gap:24px; align-items:flex-start; width:100%; }
+.footer-main .footer-brand { flex: 0 0 220px; }
+.footer-main .features-col { flex: 1 1 320px; }
+.footer-main .admins-col { flex: 1 1 260px; }
+.footer-sep { border:0; border-top:1px solid rgba(255,255,255,0.06); margin:16px 0; }
+.footer-bottom { text-align:center; width:100%; padding-bottom:6px; }
+
+/* Make admin items compact */
+.admin-item { margin-bottom:8px; }
+.admin-name { font-weight:700; }
+.admin-email { font-size:0.9rem; color:var(--color-footer-text); text-decoration:none; }
+.admin-email:hover { text-decoration:underline; }
+
+@media (max-width:800px) {
+    .footer-main { flex-direction:column; }
+    .footer-main .footer-brand { flex: 0 0 auto; }
+    .footer-main .features-col, .footer-main .admins-col { flex: 1 1 auto; }
+    .footer-bottom { text-align:left; }
+}
 /* Move navbar inner padding to container so background spans edge-to-edge */
 .navbar .container { padding: 12px 20px; }
 .site-footer .col { min-width:0; }
