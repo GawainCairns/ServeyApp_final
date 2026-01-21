@@ -84,6 +84,7 @@
 			if (!s || !s.id) throw new Error('Survey not found');
 
 			el.name.textContent = s.name || 'Untitled survey';
+			if (el.name && el.name.classList) el.name.classList.add('accent');
 			el.desc.textContent = s.discription || s.description || '';
 
 			// fetch questions and answers
@@ -120,11 +121,7 @@
 				const title = document.createElement('div');
 				title.className = 'card-title';
 				title.textContent = `Question ${idx + 1}`;
-				const sub = document.createElement('div');
-				sub.className = 'card-sub';
-				sub.textContent = q.type || '';
 				header.appendChild(title);
-				header.appendChild(sub);
 
 				// card body
 				const body = document.createElement('div');

@@ -49,7 +49,7 @@
 				addLink('Admin', (window.location.origin || '') + '/html/admin.html');
 			}
 			// Profile with user name
-			const profileText = user && user.name ? `Profile - ${user.name}` : 'Profile';
+			const profileText = user && user.name ? `${user.name}` : 'Profile';
 			addLink(profileText, (window.location.origin || '') + '/html/profile.html');
 
 			// Logout as a button-like link

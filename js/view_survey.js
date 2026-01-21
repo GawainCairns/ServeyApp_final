@@ -84,6 +84,7 @@
 			if (!s || !s.id) throw new Error('Survey not found');
 
 			el.name.textContent = s.name || 'Untitled survey';
+			if (el.name && el.name.classList) el.name.classList.add('accent');
 			el.desc.textContent = s.discription || s.description || '';
 
 			// fetch questions and answers

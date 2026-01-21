@@ -2,7 +2,7 @@
 (function(){
   'use strict';
 
-  const ADMIN_ENDPOINT = 'localhost:3000/user/admin/info';
+  const ADMIN_ENDPOINT = 'http://localhost:3000/user/admin/info';
   const MAX_ADMINS = 2;
 
   function createEl(tag, cls, text) {
@@ -55,7 +55,6 @@
         const aWrap = createEl('div', 'admin-item');
         const name = createEl('div', 'admin-name', a.name || 'Unknown');
         const email = createEl('a', 'admin-email', a.email || '');
-        if (a.email) email.href = `mailto:${a.email}`;
         aWrap.appendChild(name);
         aWrap.appendChild(email);
         right.appendChild(aWrap);
