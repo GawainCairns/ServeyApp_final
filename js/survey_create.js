@@ -189,6 +189,67 @@ if (createQuestionForm) {
         if (type === 'boolean' && optionVals.length < 2) return showMessage('Boolean questions require two answers');
 
         try {
+            // If we're editing an existing question, do update flow
+            if (createQuestionForm.dataset.editing) {
+                const qid = createQuestionForm.dataset.editing;
+                const uheaders = { 'Content-Type': 'application/json' };
+                const utoken = getToken();
+                if (utoken) uheaders['Authorization'] = `Bearer ${utoken}`;
+
+                // update question
+                const updateQ = await fetch(`${baseUrl}/survey/${currentSurveyId}/question/${qid}`, {
+                    method: 'PUT',
+                    headers: uheaders,
+                    body: JSON.stringify({ question, type })
+                });
+                if (!updateQ.ok) throw new Error('Failed to update question');
+
+                // update or create answers based on option inputs
+                const optInputs = [...optionsList.querySelectorAll('.option-input')];
+                for (const inp of optInputs) {
+                    const val = inp.value.trim();
+                    if (!val) continue;
+                    const aid = inp.dataset.aid;
+                    const aheaders = { 'Content-Type': 'application/json' };
+                    const atoken = getToken();
+                    if (atoken) aheaders['Authorization'] = `Bearer ${atoken}`;
+                    if (aid) {
+                        // update existing answer
+                        await fetch(`${baseUrl}/survey/${currentSurveyId}/answer/${aid}`, {
+                            method: 'PUT',
+                            headers: aheaders,
+                            body: JSON.stringify({ question_id: qid, answer: val })
+                        });
+                    } else {
+                        // create new answer
+                        await fetch(`${baseUrl}/survey/${currentSurveyId}/answer`, {
+                            method: 'POST',
+                            headers: aheaders,
+                            body: JSON.stringify({ question_id: qid, answer: val })
+                        });
+                    }
+                }
+
+                // clear editing state and reset form
+                delete createQuestionForm.dataset.editing;
+                // restore submit button text
+                const submitBtn = createQuestionForm.querySelector('button[type="submit"]');
+                if (submitBtn && submitBtn.dataset.origText) {
+                    submitBtn.textContent = submitBtn.dataset.origText;
+                    delete submitBtn.dataset.origText;
+                }
+                // remove highlight from edited question
+                const prev = document.querySelector('#questionsList li.accent');
+                if (prev) prev.classList.remove('accent');
+
+                el('questionText').value = '';
+                optionsList.innerHTML = '';
+                questionType.value = 'text';
+                hide(optionsArea);
+                fetchQuestions();
+                return;
+            }
+
             const headers = { 'Content-Type': 'application/json' };
             const token = getToken();
             if(token) headers['Authorization'] = `Bearer ${token}`;
@@ -256,6 +317,8 @@ async function fetchQuestions() {
         for (let i = 0; i < questions.length; i++) {
             const q = questions[i];
             const li = document.createElement('li');
+            // attach question id for later reference
+            li.dataset.qid = q.id;
             // Number questions by their position in the survey (1..n)
             li.textContent = `${i + 1}. ${q.question} — ${q.type}`;
             if (q.type === 'multiple' || q.type === 'boolean') {
@@ -265,10 +328,78 @@ async function fetchQuestions() {
                 view.addEventListener('click', () => showAnswersForQuestion(q.id, li));
                 li.appendChild(view);
             }
+                // Edit button to modify question
+                const edit = document.createElement('button');
+                edit.type = 'button';
+                edit.textContent = 'Edit';
+                edit.style.marginLeft = '8px';
+                edit.addEventListener('click', () => editQuestion(q.id));
+                li.appendChild(edit);
             list.appendChild(li);
         }
     } catch (err) {
         console.error(err);
+    }
+}
+
+// Populate the question creation form for editing an existing question
+async function editQuestion(qid) {
+    if (!currentSurveyId) return showMessage('No survey selected');
+    try {
+        const headers = {};
+        const token = getToken();
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        // fetch question
+        const qres = await fetch(`${baseUrl}/survey/${currentSurveyId}/question/${qid}`, { headers });
+        if (!qres.ok) throw new Error('Failed to fetch question');
+        const q = await qres.json();
+
+        // fetch answers and filter for this question
+        const ares = await fetch(`${baseUrl}/survey/${currentSurveyId}/answer`, { headers });
+        if (!ares.ok) throw new Error('Failed to fetch answers');
+        const answers = await ares.json();
+        const forQ = answers.filter(a => a.question_id === qid || a.question_id == qid);
+
+        // remove previous highlight
+        const prev = document.querySelector('#questionsList li.accent');
+        if (prev) prev.classList.remove('accent');
+
+        // populate form
+        el('questionText').value = q.question || '';
+        el('questionType').value = q.type || 'text';
+        // ensure options area visibility
+        if (el('questionType').value === 'multiple') show(optionsArea);
+        else if (el('questionType').value === 'boolean') show(optionsArea);
+        else hide(optionsArea);
+
+        optionsList.innerHTML = '';
+        for (const a of forQ) {
+            const row = createOptionInput(a.answer || '');
+            const input = row.querySelector('.option-input');
+            if (input) input.dataset.aid = a.id; // store answer id for updates
+            optionsList.appendChild(row);
+        }
+
+        // mark form as editing this question id
+        createQuestionForm.dataset.editing = qid;
+
+        // highlight the question in the list
+        const targetLi = document.querySelector(`#questionsList li[data-qid="${qid}"]`);
+        if (targetLi) targetLi.classList.add('accent');
+
+        // change the add button text to 'Submit' and remember original
+        const submitBtn = createQuestionForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            if (!submitBtn.dataset.origText) submitBtn.dataset.origText = submitBtn.textContent;
+            submitBtn.textContent = 'Submit';
+        }
+
+        // focus the question text
+        el('questionText').focus();
+    } catch (err) {
+        console.error(err);
+        showMessage(err.message || 'Error preparing edit');
     }
 }
 
