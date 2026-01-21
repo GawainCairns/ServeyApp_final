@@ -126,20 +126,78 @@
 		surveysEmpty.style.display = 'none';
 
 		if(viewMode === 'grid'){
-			// render as grid of cards
+			// render as grid of cards (original appearance)
 			surveysData.forEach(item=>{
 				const c = buildCard(item);
 				surveysRoot.appendChild(c);
 			});
 		} else {
-			// render as list: full-width cards stacked
+			// render as a table inside a card listing all surveys with action buttons
+			const listCard = createEl('div', 'card');
+			const header = createEl('div', 'card-header');
+			const title = createEl('div', 'card-title', 'My Surveys');
+			header.appendChild(title);
+			listCard.appendChild(header);
+
+			const table = createEl('table', 'survey-table');
+			const thead = createEl('thead');
+			const headRow = createEl('tr');
+			const th1 = createEl('th', '', 'Survey');
+			const th2 = createEl('th', '', 'Questions');
+			const th3 = createEl('th', '', 'Responses');
+			const th4 = createEl('th', '', 'Actions');
+			headRow.appendChild(th1);
+			headRow.appendChild(th2);
+			headRow.appendChild(th3);
+			headRow.appendChild(th4);
+			thead.appendChild(headRow);
+			table.appendChild(thead);
+
+			const tbody = createEl('tbody');
+			const origin = (window.location.origin || '');
+
 			surveysData.forEach(item=>{
-				const wrapper = createEl('div', 'col');
-				const c = buildCard(item);
-				c.style.width = '100%';
-				wrapper.appendChild(c);
-				surveysRoot.appendChild(wrapper);
+				const s = item.survey;
+				const tr = createEl('tr');
+
+				const tdTitle = createEl('td', '', s.name || 'Untitled survey');
+				const tdQ = createEl('td', '', String(item.questions || 0));
+				const tdR = createEl('td', '', String(item.responses || 0));
+
+				const tdActions = createEl('td');
+
+				const edit = createEl('button', 'btn btn-outline', 'Edit');
+				edit.addEventListener('click', ()=>{
+					const code = s.s_code || s.code || s.id;
+					window.location.href = origin + '/html/survey_edit.html?code=' + encodeURIComponent(code);
+				});
+
+				const view = createEl('button', 'btn', 'View');
+				view.addEventListener('click', ()=>{
+					const code = s.s_code || s.code || s.id;
+					window.location.href = origin + '/html/view_survey.html?code=' + encodeURIComponent(code);
+				});
+
+				const dataBtn = createEl('button', 'btn btn-secondary', 'View Data');
+				dataBtn.addEventListener('click', ()=>{
+					window.location.href = origin + '/html/data.html?id=' + encodeURIComponent(s.id);
+				});
+
+				tdActions.appendChild(edit);
+				tdActions.appendChild(view);
+				tdActions.appendChild(dataBtn);
+
+				tr.appendChild(tdTitle);
+				tr.appendChild(tdQ);
+				tr.appendChild(tdR);
+				tr.appendChild(tdActions);
+
+				tbody.appendChild(tr);
 			});
+
+			table.appendChild(tbody);
+			listCard.appendChild(table);
+			surveysRoot.appendChild(listCard);
 		}
 	}
 

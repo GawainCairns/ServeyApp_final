@@ -27,12 +27,16 @@
 						<div class="card">
 							<div class="card-header">
 								<div class="card-title">Actions</div>
-								<div>
-									<button id="create-survey-btn" class="btn btn-primary">+ Create Survey</button>
-									<button id="toggle-view" class="btn btn-outline">Switch to List</button>
-								</div>
 							</div>
-							<div class="card-sub">Create a new survey or switch how your surveys are displayed.</div>
+							<div class="card-sub">
+								<ul>
+									<li><strong>Create Survey</strong>: Opens the survey creation form to build a new survey.</li>
+									<li><strong>Switch View</strong>: Toggles the surveys display between grid and list layouts.</li>
+									<li><strong>Edit</strong>: Update questions, title, and settings for that survey.</li>
+									<li><strong>View</strong>: Open the live survey for preview or sharing. This is also where you can delete a survey.</li>
+									<li><strong>View Data</strong>: See collected responses and exportable data.</li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -51,6 +55,18 @@
 					<div class="card">
 						<div class="card-title">Responses</div>
 						<div id="stat-responses" class="card-sub">—</div>
+					</div>
+					<div class="card">
+						<div class="card-title">View</div>
+						<div class="card-sub">
+							<button id="toggle-view" class="btn btn-outline">Switch to List</button>
+						</div>
+					</div>
+					<div class="card">
+						<div class="card-title">Create</div>
+						<div class="card-sub">
+							<button id="create-survey-btn" class="btn btn-primary">+ Create Survey</button>
+						</div>
 					</div>
 				</div>
 

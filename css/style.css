@@ -11,6 +11,7 @@
 
     --color-accent: #7C3AED; /* accent for highlights */
     --color-accent-rgb: 124,58,237;
+    --color-accent-text: #140925;
 
     /* Surfaces & text */
     --color-bg: #F9FAFB; /* page background */
@@ -155,9 +156,33 @@ body > .register-container {
 .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px; align-items:start; }
 .dashboard-grid > .card { width:100%; }
 
+/* Survey list table (list view) */
+.survey-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    margin: 0;
+}
+.survey-table thead th {
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: 600;
+    background: rgba(16,24,40,0.03);
+    border: 1px solid rgba(16,24,40,0.08);
+}
+.survey-table tbody td {
+    padding: 10px 12px;
+    border: 1px solid rgba(16,24,40,0.08);
+    vertical-align: middle;
+}
+.survey-table td .btn { margin-right: 8px; }
+
+/* Allow horizontal scroll on small screens while keeping table inside card */
+.card { overflow-x: auto; }
+
 /* Card actions area (buttons inside a card) */
 .card .actions { display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
-.card .card-header { align-items: center; justify-content: space-between; }
+.card .card-header { align-items: center; justify-content: space-between; color: var(--color-accent-text); }
 .btn {
     display:inline-flex;
     align-items:center;
