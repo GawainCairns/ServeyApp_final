@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Survey System - Edit Survey</title>
+	<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+	<div id="site-header"></div>
+
+	<main class="container">
+		
+
+		<section id="edit-survey-section">
+			<div class="card">
+				<h1 class="accent">Edit Survey</h1>
+				<div class="card-header">
+					<div class="card-title">Edit Survey</div>
+					<div class="card-sub">Edit a survey to collect responses</div>
+				</div>
+				<div class="card-body">
+					<form id="editSurveyForm" class="form">
+						<div class="field">
+							<label for="surveyName">Survey Name</label>
+							<input id="surveyName" name="name" type="text" required />
+						</div>
+						<div class="field">
+							<label for="surveyDescription">Description</label>
+							<textarea id="surveyDescription" name="description" rows="3"></textarea>
+						</div>
+						<input id="surveyCreator" name="creator" type="hidden" />
+						<div class="field">
+							<label>Creator</label>
+							<span id="surveyCreatorDisplay">(not logged in)</span>
+						</div>
+						<div class="actions">
+							<button type="submit" class="btn btn-primary">Save Survey</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</section>
+
+		<section id="survey-management" style="display:none; margin-top:16px;">
+			<div class="card">
+				<div class="card-header">
+					<div>
+						<div class="card-title" id="createdSurveyTitle"></div>
+						<div class="card-sub" id="createdSurveyInfo"></div>
+					</div>
+					<div></div>
+				</div>
+				<div class="card-body">
+					<h3>Add Question</h3>
+					<form id="editQuestionForm" class="form">
+						<div class="field">
+							<label for="questionText">Question</label>
+							<input id="questionText" name="question" type="text" required />
+						</div>
+						<div class="field">
+							<label for="questionType">Type</label>
+							<select id="questionType" name="type">
+								<option value="text">Text</option>
+								<option value="boolean">Boolean</option>
+								<option value="multiple">Multiple Choice</option>
+							</select>
+						</div>
+						<div id="optionsArea" style="display:none;">
+							<label>Options</label>
+							<div id="optionsList"></div>
+							<div style="margin-top:8px;">
+								<button id="addOptionBtn" type="button" class="btn btn-outline">Add Option</button>
+							</div>
+						</div>
+						<div class="actions">
+							<button type="submit" class="btn btn-primary">Add Question</button>
+						</div>
+					</form>
+
+					<hr />
+					<h3>Questions</h3>
+					<ul id="questionsList"></ul>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<div id="site-footer"></div>
+
+	<script src="../js/utils/session.js"></script>
+	<script src="../js/utils/states.js"></script>
+	<script src="../js/utils/header.js"></script>
+	<script src="../js/utils/footer.js"></script>
+	<script src="../js/survey_edit.js"></script>
+</body>
+</html>
+

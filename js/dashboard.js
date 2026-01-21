@@ -90,7 +90,8 @@
 
 		const edit = createEl('button', 'btn btn-outline', 'Edit');
 		edit.addEventListener('click', ()=>{
-			window.location.href = origin + '/html/survey_create.html?id=' + encodeURIComponent(s.id);
+			const code = s.s_code || s.code || s.id;
+			window.location.href = origin + '/html/survey_edit.html?code=' + encodeURIComponent(code);
 		});
 
 		const view = createEl('button', 'btn', 'View');
