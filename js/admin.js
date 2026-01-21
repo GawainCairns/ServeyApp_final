@@ -42,7 +42,7 @@
 
         const thead = createEl('thead');
         const headRow = createEl('tr');
-        ['Name','Email','Role','Actions'].forEach(h=>{ const th=createEl('th','',h); headRow.appendChild(th); });
+        ['ID','Name','Email','Role','Actions'].forEach(h=>{ const th=createEl('th','',h); headRow.appendChild(th); });
         thead.appendChild(headRow);
         table.appendChild(thead);
 
@@ -50,6 +50,7 @@
 
         list.forEach(u=>{
             const tr = createEl('tr');
+            const tdId = createEl('td','', String(u.id || ''));
             const tdName = createEl('td','', u.name || '');
             const tdEmail = createEl('td','', u.email || '');
             const tdRole = createEl('td','', u.role || '');
@@ -64,6 +65,7 @@
             tdActions.appendChild(selectBtn);
             tdActions.appendChild(delBtn);
 
+            tr.appendChild(tdId);
             tr.appendChild(tdName);
             tr.appendChild(tdEmail);
             tr.appendChild(tdRole);
@@ -85,12 +87,30 @@
             const headers = {};
             if(token) headers['Authorization'] = 'Bearer ' + token;
 
+            // First, fetch surveys for this user and delete them
+            try{
+                const surveys = await fetchJson(API_BASE + '/user/' + encodeURIComponent(id) + '/survey');
+                if(Array.isArray(surveys) && surveys.length){
+                    await Promise.all(surveys.map(async s => {
+                        try{
+                            const resS = await fetch(API_BASE + '/survey/' + encodeURIComponent(s.id), { method: 'DELETE', headers });
+                            if(!resS.ok) console.error('Failed to delete survey', s.id);
+                        }catch(e){ console.error('Error deleting survey', s.id, e); }
+                    }));
+                }
+            }catch(e){ console.error('Error fetching/deleting user surveys', e); }
+
+            // Then delete the user
             const res = await fetch(API_BASE + '/admin/user/' + encodeURIComponent(id), { method: 'DELETE', headers });
             if(!res.ok){
                 alert('Failed to delete user.');
                 return;
             }
+
+            // Refresh lists
             await loadUsers();
+            if(typeof loadAllSurveysAdmin === 'function') await loadAllSurveysAdmin();
+
             // Clear selected dashboard if it referenced the deleted user
             const sel = document.getElementById('selected-dashboard');
             if(sel && sel.style.display !== 'none'){
@@ -203,6 +223,116 @@
         }
 
         loadUsers();
+        loadAllSurveysAdmin();
+    }
+
+    // Load all surveys for admin view
+    async function loadAllSurveysAdmin(){
+        const root = document.getElementById('surveys-root');
+        if(!root) return;
+        root.innerHTML = 'Loading surveys...';
+
+        const list = await fetchJson(API_BASE + '/survey/');
+        if(!Array.isArray(list) || list.length === 0){
+            root.textContent = 'No surveys found.';
+            return;
+        }
+
+        const card = createEl('div', 'card');
+        const table = createEl('table', 'survey-table');
+
+        const thead = createEl('thead');
+        const headRow = createEl('tr');
+        ['ID','Survey','Creator','Actions'].forEach(h=>{ const th=createEl('th','',h); headRow.appendChild(th); });
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+
+        const tbody = createEl('tbody');
+
+        list.forEach(survey=>{
+            const tr = createEl('tr');
+            const tdId = createEl('td','', String(survey.id || ''));
+            const tdTitle = createEl('td','', survey.name || 'Untitled survey');
+            const tdCreator = createEl('td','', survey.creator || '');
+            const tdActions = createEl('td');
+
+            const selectBtn = createEl('button','btn small','Select');
+            selectBtn.addEventListener('click', ()=>{
+                const code = survey.s_code || survey.code || survey.id;
+                const origin = (window.location.origin || '');
+                // open edit configuration for this survey
+                window.location.href = origin + '/html/survey_edit.html?code=' + encodeURIComponent(code);
+            });
+
+            const delBtn = createEl('button','btn btn-danger small','Delete');
+            delBtn.addEventListener('click', ()=> deleteSurvey(survey.id, survey.name || 'this survey'));
+
+            tdActions.appendChild(selectBtn);
+            tdActions.appendChild(delBtn);
+
+            tr.appendChild(tdId);
+            tr.appendChild(tdTitle);
+            tr.appendChild(tdCreator);
+            tr.appendChild(tdActions);
+
+            tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        card.appendChild(table);
+        root.innerHTML = '';
+        root.appendChild(card);
+    }
+
+    async function deleteSurvey(id, displayName){
+        if(!confirm(`Delete ${displayName}? This action cannot be undone.`)) return;
+        try{
+            const token = (window.Session && window.Session.getToken) ? window.Session.getToken() : localStorage.getItem('token');
+            const headers = { 'Content-Type': 'application/json' };
+            if(token) headers['Authorization'] = 'Bearer ' + token;
+
+            // Attempt to delete answers for questions (best-effort)
+            try{
+                const questions = await fetchJson(API_BASE + '/survey/' + encodeURIComponent(id) + '/question');
+                if(Array.isArray(questions) && questions.length){
+                    for(const q of questions){
+                        try{
+                            const answers = await fetchJson(API_BASE + '/survey/' + encodeURIComponent(id) + '/answer');
+                            if(Array.isArray(answers) && answers.length){
+                                for(const a of answers){
+                                    try{
+                                        const resA = await fetch(API_BASE + '/survey/' + encodeURIComponent(id) + '/answer/' + encodeURIComponent(a.id), { method: 'DELETE', headers });
+                                        if(!resA.ok) console.error('Failed to delete answer', a.id);
+                                    }catch(e){ console.error('Error deleting answer', a.id, e); }
+                                }
+                            }
+                        }catch(e){ console.error('Error fetching answers for question', q && q.id, e); }
+                    }
+                }
+            }catch(e){ console.error('Error fetching questions for survey', id, e); }
+
+            // Attempt to delete responses for this survey (best-effort)
+            try{
+                const responses = await fetchJson(API_BASE + '/response/survey/' + encodeURIComponent(id));
+                if(Array.isArray(responses) && responses.length){
+                    for(const r of responses){
+                        try{
+                            // Try a conventional delete endpoint for individual response
+                            const resR = await fetch(API_BASE + '/response/' + encodeURIComponent(r.id), { method: 'DELETE', headers });
+                            if(!resR.ok) console.error('Failed to delete response', r.id);
+                        }catch(e){ console.error('Error deleting response', r && r.id, e); }
+                    }
+                }
+            }catch(e){ console.error('Error fetching responses for survey', id, e); }
+
+            // Finally delete the survey itself
+            const res = await fetch(API_BASE + '/survey/' + encodeURIComponent(id), { method: 'DELETE', headers });
+            if(!res.ok){
+                alert('Failed to delete survey.');
+                return;
+            }
+            await loadAllSurveysAdmin();
+        }catch(e){ console.error('deleteSurvey error', e); alert('Failed to delete survey.'); }
     }
 
     if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
