@@ -10,14 +10,32 @@
 	<div id="site-header"></div>
 
 	<main class="container">
-		<h1>Admin</h1>
-		<p>Admin panel placeholder.</p>
+		<!-- Users list card -->
+		<div id="users-card" class="card">
+			<h1 class="accent">Admin</h1>
+			<div class="card-header">
+				<div class="card-title">All Users</div>
+				<div class="card-sub">Manage application users</div>
+			</div>
+			<div id="users-root">Loading users...</div>
+		</div>
+
+		<!-- Selected user's dashboard -->
+		<div id="selected-dashboard" class="card" style="display:none;">
+			<div class="card-header">
+				<div class="card-title">Selected User</div>
+				<div class="card-sub" id="selected-user-sub">Choose a user to view their dashboard</div>
+			</div>
+			<div id="selected-dashboard-body"></div>
+		</div>
 	</main>
 
 	<div id="site-footer"></div>
 
 	<script src="../js/utils/session.js"></script>
 	<script src="../js/utils/states.js"></script>
+	<script>if(window.SiteState) SiteState.enforcePage('admin');</script>
+	<script src="../js/admin.js"></script>
 	<script src="../js/utils/header.js"></script>
 	<script src="../js/utils/footer.js"></script>
 </body>
