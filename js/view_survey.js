@@ -140,6 +140,63 @@
 				el.questions.appendChild(card);
 			});
 
+			// add action card for survey actions (delete / edit)
+			const actionCard = document.createElement('div');
+			actionCard.className = 'card action-card';
+			const actionHeader = document.createElement('div');
+			actionHeader.className = 'card-header';
+			const actionTitle = document.createElement('div');
+			actionTitle.className = 'card-title';
+			actionTitle.textContent = 'Survey Actions';
+			actionHeader.appendChild(actionTitle);
+			const actionBody = document.createElement('div');
+			actionBody.className = 'card-body';
+
+			const deleteBtn = document.createElement('button');
+			deleteBtn.className = 'btn btn-danger';
+			deleteBtn.type = 'button';
+			deleteBtn.textContent = 'Delete Survey';
+			deleteBtn.style.marginRight = '8px';
+
+			const editBtn = document.createElement('button');
+			editBtn.className = 'btn btn-primary';
+			editBtn.type = 'button';
+			editBtn.textContent = 'Edit Survey';
+
+			actionBody.appendChild(deleteBtn);
+			actionBody.appendChild(editBtn);
+			actionCard.appendChild(actionHeader);
+			actionCard.appendChild(actionBody);
+			el.questions.appendChild(actionCard);
+
+			// delete handler with confirmation (include auth bearer token)
+			deleteBtn.addEventListener('click', async () => {
+				if (!s || !s.id) return showMessage('Survey ID missing', true);
+				if (!confirm('Are you sure you want to delete this survey? This cannot be undone.')) return;
+				try {
+					const token = (window.Session && typeof Session.getToken === 'function') ? Session.getToken() : localStorage.getItem('token');
+					const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+					const res = await fetch(`${API_BASE}/survey/${s.id}`, { method: 'DELETE', headers });
+					if (!res.ok) {
+						// try to read error message from body
+						let msg = res.statusText || res.status;
+						try { const body = await res.json(); if (body && body.error) msg = body.error; } catch(e){}
+						throw new Error('Delete failed: ' + msg);
+					}
+					showMessage('Survey deleted.', false);
+					setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+				} catch (err) {
+					console.error(err);
+					showMessage('Delete failed: ' + err.message, true);
+				}
+			});
+
+			// edit handler: navigate to survey_create with id query
+			editBtn.addEventListener('click', () => {
+				if (!s || !s.id) return showMessage('Survey ID missing', true);
+				window.location.href = `survey_create.html?id=${s.id}`;
+			});
+
 		} catch (err) {
 			console.error(err);
 			showMessage('Error loading survey: ' + err.message, true);

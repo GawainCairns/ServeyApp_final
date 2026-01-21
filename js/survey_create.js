@@ -253,9 +253,11 @@ async function fetchQuestions() {
         const questions = await res.json();
         const list = el('questionsList');
         list.innerHTML = '';
-        for (const q of questions) {
+        for (let i = 0; i < questions.length; i++) {
+            const q = questions[i];
             const li = document.createElement('li');
-            li.textContent = `(${q.id}) ${q.question} — ${q.type}`;
+            // Number questions by their position in the survey (1..n)
+            li.textContent = `${i + 1}. ${q.question} — ${q.type}`;
             if (q.type === 'multiple' || q.type === 'boolean') {
                 const view = document.createElement('button');
                 view.type = 'button';

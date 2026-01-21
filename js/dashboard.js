@@ -78,7 +78,7 @@
 
 		const header = createEl('div', 'card-header');
 		const title = createEl('div', 'card-title', s.name || 'Untitled survey');
-		const meta = createEl('div', 'card-sub', `Questions: ${item.questions} · Responses: ${item.responses}`);
+		const meta = createEl('div', 'card-sub', `Questions: ${item.questions} Responses: ${item.responses}`);
 		header.appendChild(title);
 		header.appendChild(meta);
 
