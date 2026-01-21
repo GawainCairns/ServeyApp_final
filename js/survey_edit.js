@@ -387,22 +387,34 @@ async function fetchQuestions() {
             const li = document.createElement('li');
             // attach question id for later reference
             li.dataset.qid = q.id;
-            // Number questions by their position in the survey (1..n)
-            li.textContent = `${i + 1}. ${q.question} — ${q.type}`;
+            // layout: put edit button first (left), then text, then view button
+            li.style.display = 'flex';
+            li.style.alignItems = 'center';
+
+            // Label (flexible) with question text
+            const label = document.createElement('span');
+            label.textContent = `${i + 1}. ${q.question} — ${q.type}`;
+            label.style.flex = '1';
+            li.appendChild(label);
+
+            // View answers (if applicable)
             if (q.type === 'multiple' || q.type === 'boolean') {
                 const view = document.createElement('button');
                 view.type = 'button';
                 view.textContent = 'View Answers';
+                view.style.marginLeft = '8px';
                 view.addEventListener('click', () => showAnswersForQuestion(q.id, li));
                 li.appendChild(view);
             }
-                // Edit button to modify question
-                const edit = document.createElement('button');
-                edit.type = 'button';
-                edit.textContent = 'Edit';
-                edit.style.marginLeft = '8px';
-                edit.addEventListener('click', () => editQuestion(q.id));
-                li.appendChild(edit);
+
+            // Edit button (right-most)
+            const edit = document.createElement('button');
+            edit.type = 'button';
+            edit.textContent = 'Edit';
+            edit.style.marginLeft = '8px';
+            edit.addEventListener('click', () => editQuestion(q.id));
+            li.appendChild(edit);
+
             list.appendChild(li);
         }
     } catch (err) {

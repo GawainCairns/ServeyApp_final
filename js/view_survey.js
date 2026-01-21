@@ -191,10 +191,11 @@
 				}
 			});
 
-			// edit handler: navigate to survey_create with id query
+			// edit handler: navigate to survey_edit using survey code (fall back to id)
 			editBtn.addEventListener('click', () => {
 				if (!s || !s.id) return showMessage('Survey ID missing', true);
-				window.location.href = `survey_create.html?id=${s.id}`;
+				const code = s.s_code || s.code || s.id;
+				window.location.href = `survey_edit.html?code=${encodeURIComponent(code)}`;
 			});
 
 		} catch (err) {
