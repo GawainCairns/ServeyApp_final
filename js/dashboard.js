@@ -115,7 +115,8 @@
 		dataBtn.setAttribute('title', 'View Survey Data');
 		dataBtn.setAttribute('aria-label', 'View Survey Data');
 		dataBtn.addEventListener('click', ()=>{
-			window.location.href = origin + '/html/data.html?id=' + encodeURIComponent(s.id);
+			const code = s.s_code || s.code || s.id;
+			window.location.href = origin + '/html/data.html?s_code=' + encodeURIComponent(code);
 		});
 
 		actions.appendChild(edit);
@@ -204,7 +205,8 @@
 				dataBtn.setAttribute('title', 'View Survey Data');
 				dataBtn.setAttribute('aria-label', 'View Survey Data');
 				dataBtn.addEventListener('click', ()=>{
-					window.location.href = origin + '/html/data.html?id=' + encodeURIComponent(s.id);
+					const code = s.s_code || s.code || s.id;
+					window.location.href = origin + '/html/data.html?s_code=' + encodeURIComponent(code);
 				});
 
 				tdActions.appendChild(edit);

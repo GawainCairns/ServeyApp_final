@@ -10,22 +10,33 @@
 	<div id="site-header"></div>
 
 	<main class="container">
-		<section id="survey-info">
-			<h1 id="survey-name">Loading...</h1>
-			<p id="survey-desc"></p>
+		<section id="survey-info" class="card">
+			<div class="card-body">
+				<h1 id="survey-name">Loading...</h1>
+				<p id="survey-desc"></p>
+			</div>
 		</section>
 
-		<section id="questions-area">
-			<div id="questions-list"></div>
-			<div id="question-detail" style="margin-top:1rem"></div>
-		</section>
+			<section id="questions-list-card" class="col card">
+				<div class="card-header">
+					<div class="card-title">Questions</div>
+				</div>
+				<div id="questions-list" class="card-body"></div>
+			</section>
+
+			<section id="question-detail-card" class="col card">
+				<div class="card-header">
+					<div class="card-title">Question detail</div>
+				</div>
+				<div id="question-detail" class="card-body"></div>
+			</section>
 	</main>
 
 	<div id="site-footer"></div>
 
 	<script src="../js/utils/session.js"></script>
 	<script src="../js/utils/states.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 	<script src="../js/utils/header.js"></script>
 	<script src="../js/utils/footer.js"></script>
 	<script src="../js/data.js"></script>

@@ -322,6 +322,9 @@ body > .register-container {
 /* Small helper for accent highlights */
 .accent { color: var(--color-accent); }
 
+/* Survey title uses accent color for visual emphasis */
+#survey-name { color: var(--color-accent); margin: 0 0 6px 0; }
+
 /* -------- Auth (login / register) -------- */
 .login-container,
 .register-container {
@@ -387,3 +390,10 @@ button {
 }
 
 /* End of stylesheet */
+/* Graph picker / segmented control */
+.graph-toggle { display:flex; gap:8px; align-items:center; margin-bottom:12px; }
+.btn-toggle { padding:6px 10px; border-radius:8px; border:1px solid rgba(16,24,40,0.06); background:transparent; color:var(--color-text); cursor:pointer; font-weight:600; }
+.btn-toggle:hover { background: var(--primary-hover-bg); }
+.btn-toggle:focus { outline: none; box-shadow: var(--primary-focus-shadow); }
+.btn-toggle.active { background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); color: var(--color-primary-contrast); border-color: transparent; box-shadow: var(--shadow-sm); }
+

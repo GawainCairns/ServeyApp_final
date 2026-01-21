@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', initDataPage);
 
+const API_BASE = 'http://localhost:3000';
+
 async function initDataPage() {
 	const params = new URLSearchParams(window.location.search);
 	const s_code = params.get('s_code');
@@ -16,7 +18,8 @@ async function initDataPage() {
 	}
 
 	try {
-		const surveysResp = await fetch('/survey/');
+		const surveysResp = await fetch(`${API_BASE}/survey/`);
+		if(!surveysResp.ok) throw new Error('Failed to load surveys: ' + surveysResp.status);
 		const surveys = await surveysResp.json();
 		const survey = surveys.find(s => String(s.s_code) === String(s_code));
 
@@ -32,33 +35,74 @@ async function initDataPage() {
 		const surveyId = survey.id;
 
 		const [qRes, aRes, rRes] = await Promise.all([
-			fetch(`/survey/${surveyId}/question`),
-			fetch(`/survey/${surveyId}/answer`),
-			fetch(`/response/survey/${surveyId}`)
+			fetch(`${API_BASE}/survey/${surveyId}/question`),
+			fetch(`${API_BASE}/survey/${surveyId}/answer`),
+			fetch(`${API_BASE}/response/survey/${surveyId}`)
 		]);
 
-		const questions = await qRes.json();
-		const answers = await aRes.json();
-		const responses = await rRes.json();
+		const questions = (qRes && qRes.ok) ? await qRes.json() : [];
+		const answers = (aRes && aRes.ok) ? await aRes.json() : [];
+		const responses = (rRes && rRes.ok) ? await rRes.json() : [];
 
 		if (!Array.isArray(questions)) {
 			questionsList.textContent = 'No questions found for this survey.';
 			return;
 		}
 
-		questions.forEach(q => {
-			const item = document.createElement('div');
-			item.className = 'question-item';
-			item.innerHTML = `<strong>${q.question}</strong> <small>(${q.type})</small>`;
-			item.style.cursor = 'pointer';
-			item.addEventListener('click', () => showQuestionDetail(q, answers, responses, questionDetail));
-			questionsList.appendChild(item);
+		// Render questions as a table similar to admin survey table
+		questionsList.innerHTML = '';
+		const table = document.createElement('table');
+		table.className = 'survey-table';
+
+		const thead = document.createElement('thead');
+		const headRow = document.createElement('tr');
+		['#', 'Question', 'Type', 'Actions'].forEach(h => { const th = document.createElement('th'); th.textContent = h; headRow.appendChild(th); });
+		thead.appendChild(headRow);
+		table.appendChild(thead);
+
+		const tbody = document.createElement('tbody');
+
+		questions.forEach((q, idx) => {
+			const tr = document.createElement('tr');
+			const tdIdx = document.createElement('td'); tdIdx.textContent = String(idx + 1);
+			const tdQ = document.createElement('td'); tdQ.textContent = q.question || '';
+			const tdType = document.createElement('td'); tdType.textContent = q.type || '';
+			const tdActions = document.createElement('td');
+
+			const selectBtn = document.createElement('button');
+			selectBtn.type = 'button';
+			selectBtn.className = 'btn small';
+			selectBtn.setAttribute('title', 'Select');
+			selectBtn.setAttribute('aria-label', 'Select');
+			selectBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-square" viewBox="0 0 16 16">\n  <path d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5z"/>\n  <path d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0"/>\n</svg>';
+			selectBtn.addEventListener('click', () => showQuestionDetail(q, answers, responses, questionDetail));
+
+			tdActions.appendChild(selectBtn);
+
+			tr.appendChild(tdIdx);
+			tr.appendChild(tdQ);
+			tr.appendChild(tdType);
+			tr.appendChild(tdActions);
+
+			// allow row click to also select question
+			tr.style.cursor = 'pointer';
+			tr.addEventListener('click', (ev) => {
+				// avoid double-trigger when clicking the button
+				if (ev.target && ev.target.closest('button')) return;
+				showQuestionDetail(q, answers, responses, questionDetail);
+			});
+
+			tbody.appendChild(tr);
 		});
+
+		table.appendChild(tbody);
+		questionsList.appendChild(table);
 
 		// Show first question automatically
 		if (questions.length) showQuestionDetail(questions[0], answers, responses, questionDetail);
 
 	} catch (err) {
+		console.error('data page error', err);
 		nameEl.textContent = 'Error loading survey';
 		descEl.textContent = err.message || String(err);
 	}
@@ -119,36 +163,91 @@ function showQuestionDetail(question, allAnswers, allResponses, container) {
 	const labels = qAnswers.length ? qAnswers.map(a => a.answer) : Array.from(new Set(qResponses.map(r => r.answer))).filter(Boolean);
 	const counts = labels.map(label => qResponses.filter(r => String(r.answer) === String(label)).length);
 
-	const controls = document.createElement('div'); controls.className = 'chart-controls';
-	const leftArrow = document.createElement('button'); leftArrow.textContent = '◀';
-	const rightArrow = document.createElement('button'); rightArrow.textContent = '▶';
-	const typeLabel = document.createElement('span'); typeLabel.style.margin = '0 8px';
+	// improved graph type picker (segmented buttons)
+	const controls = document.createElement('div'); controls.className = 'chart-controls graph-toggle';
+	const barBtn = document.createElement('button'); barBtn.type = 'button'; barBtn.className = 'btn btn-toggle'; barBtn.textContent = 'Bar';
+	const pieBtn = document.createElement('button'); pieBtn.type = 'button'; pieBtn.className = 'btn btn-toggle'; pieBtn.textContent = 'Pie';
 
-	const canvas = document.createElement('canvas'); canvas.width = 600; canvas.height = 400;
-	container.appendChild(controls); container.appendChild(canvas);
+	const chartDiv = document.createElement('div');
+	chartDiv.style.width = '100%';
+	chartDiv.style.minHeight = '320px';
+	container.appendChild(controls); container.appendChild(chartDiv);
 
-	const graphTypes = ['bar','pie','doughnut','line'];
-	let graphIdx = 0;
+	const graphTypes = ['pie','bar'];
+	let graphIdx = 0; // 0 -> pie, 1 -> bar
 
 	let chart = null;
 	function drawCurrent() {
 		const t = graphTypes[graphIdx];
-		typeLabel.textContent = t;
-		if (chart) chart.destroy();
-		chart = new Chart(canvas.getContext('2d'), {
-			type: t,
-			data: {
-				labels,
-				datasets: [{ label: question.question, data: counts, backgroundColor: generateColors(labels.length) }]
-			},
-			options: { responsive: true }
-		});
+		if (chart && typeof chart.destroy === 'function') {
+			try { chart.destroy(); } catch (e) { /* ignore */ }
+			chart = null;
+		}
+
+		if (t === 'bar') {
+			const options = {
+				chart: { type: 'bar', height: 360, animations: { enabled: false }, toolbar: { show: false } },
+				series: [{ name: question.question, data: counts }],
+				xaxis: { categories: labels },
+				colors: generateColors(labels.length),
+				tooltip: { enabled: false },
+				dataLabels: { enabled: false },
+				states: { hover: { filter: { type: 'none' } } }
+			};
+			chart = new ApexCharts(chartDiv, options);
+			chart.render();
+			return;
+		}
+
+		// pie
+		const options = {
+			chart: { type: 'pie', height: 360, animations: { enabled: false }, toolbar: { show: false } },
+			series: counts,
+			labels: labels,
+			colors: generateColors(labels.length),
+			legend: { position: 'bottom' },
+			states: { hover: { filter: { type: 'none' } } },
+			tooltip: { enabled: false }
+		};
+		chart = new ApexCharts(chartDiv, options);
+		chart.render();
 	}
 
-	leftArrow.addEventListener('click', () => { graphIdx = (graphIdx - 1 + graphTypes.length) % graphTypes.length; drawCurrent(); });
-	rightArrow.addEventListener('click', () => { graphIdx = (graphIdx + 1) % graphTypes.length; drawCurrent(); });
+	function setActiveBtn() {
+		const isBar = graphTypes[graphIdx] === 'bar';
+		barBtn.classList.toggle('active', isBar);
+		pieBtn.classList.toggle('active', !isBar);
+		barBtn.setAttribute('aria-pressed', String(isBar));
+		pieBtn.setAttribute('aria-pressed', String(!isBar));
+	}
 
-	controls.appendChild(leftArrow); controls.appendChild(typeLabel); controls.appendChild(rightArrow);
+	barBtn.addEventListener('click', (ev) => {
+		ev.stopPropagation();
+		// if bar already selected, toggle to pie; otherwise select bar
+		if (graphTypes[graphIdx] === 'bar') {
+			graphIdx = graphTypes.indexOf('pie');
+		} else {
+			graphIdx = graphTypes.indexOf('bar');
+		}
+		setActiveBtn();
+		drawCurrent();
+	});
+
+	pieBtn.addEventListener('click', (ev) => {
+		ev.stopPropagation();
+		// if pie already selected, toggle to bar; otherwise select pie
+		if (graphTypes[graphIdx] === 'pie') {
+			graphIdx = graphTypes.indexOf('bar');
+		} else {
+			graphIdx = graphTypes.indexOf('pie');
+		}
+		setActiveBtn();
+		drawCurrent();
+	});
+
+	controls.appendChild(barBtn); controls.appendChild(pieBtn);
+	// reflect initial state
+	setActiveBtn();
 	drawCurrent();
 }
 
