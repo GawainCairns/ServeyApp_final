@@ -26,6 +26,7 @@
     }
 
     // Render table of all users with Select and Delete actions
+    let usersList = null;
     async function loadUsers(){
         const root = document.getElementById('users-root');
         if(!root) return;
@@ -37,7 +38,23 @@
             return;
         }
 
+        usersList = list.slice();
+
         const card = createEl('div', 'card');
+
+        // Search bar
+        const searchWrap = createEl('div','search-wrap');
+        const searchInput = createEl('input','search-input');
+        searchInput.type = 'search';
+        searchInput.placeholder = 'Search users by email...';
+        searchInput.addEventListener('input', ()=> renderUsers(usersList.filter(u => {
+            const q = searchInput.value.trim().toLowerCase();
+            if(!q) return true;
+            return String(u.email || '').toLowerCase().indexOf(q) !== -1 || String(u.name || '').toLowerCase().indexOf(q) !== -1;
+        })));
+        searchWrap.appendChild(searchInput);
+        card.appendChild(searchWrap);
+
         const table = createEl('table', 'survey-table');
 
         const thead = createEl('thead');
@@ -86,6 +103,51 @@
         card.appendChild(table);
         root.innerHTML = '';
         root.appendChild(card);
+
+        // expose a render function for filtering
+        function renderUsers(filtered){
+            const tbodyNew = createEl('tbody');
+            (Array.isArray(filtered) ? filtered : []).forEach(u=>{
+                const tr = createEl('tr');
+                const tdId = createEl('td','', String(u.id || ''));
+                const tdName = createEl('td','', u.name || '');
+                const tdEmail = createEl('td','', u.email || '');
+                const tdRole = createEl('td','', u.role || '');
+                const tdActions = createEl('td');
+
+                const selectBtn = createEl('button','btn small');
+                selectBtn.type = 'button';
+                selectBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-square" viewBox="0 0 16 16">\n  <path d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5z"/>\n  <path d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0"/>\n</svg>';
+                selectBtn.setAttribute('title', 'Select');
+                selectBtn.setAttribute('aria-label', 'Select');
+                selectBtn.addEventListener('click', ()=> selectUser(u.id));
+
+                const delBtn = createEl('button','btn btn-danger small');
+                delBtn.type = 'button';
+                delBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">\n  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>\n  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>\n</svg>';
+                delBtn.setAttribute('title', 'Delete');
+                delBtn.setAttribute('aria-label', 'Delete');
+                delBtn.addEventListener('click', ()=> deleteUser(u.id, u.name || u.email || 'this user'));
+
+                tdActions.appendChild(selectBtn);
+                tdActions.appendChild(delBtn);
+
+                tr.appendChild(tdId);
+                tr.appendChild(tdName);
+                tr.appendChild(tdEmail);
+                tr.appendChild(tdRole);
+                tr.appendChild(tdActions);
+
+                tbodyNew.appendChild(tr);
+            });
+            // replace old tbody
+            const oldTbody = card.querySelector('table tbody');
+            if(oldTbody) oldTbody.replaceWith(tbodyNew);
+            else card.querySelector('table').appendChild(tbodyNew);
+        }
+
+        // initial render
+        renderUsers(usersList);
     }
 
     async function deleteUser(id, displayName){
@@ -247,6 +309,7 @@
     }
 
     // Load all surveys for admin view
+    let surveysList = null;
     async function loadAllSurveysAdmin(){
         const root = document.getElementById('surveys-root');
         if(!root) return;
@@ -258,7 +321,23 @@
             return;
         }
 
+        surveysList = list.slice();
+
         const card = createEl('div', 'card');
+
+        // Search bar for surveys
+        const searchWrap = createEl('div','search-wrap');
+        const searchInput = createEl('input','search-input');
+        searchInput.type = 'search';
+        searchInput.placeholder = 'Search surveys by name...';
+        searchInput.addEventListener('input', ()=> renderSurveys(surveysList.filter(s => {
+            const q = searchInput.value.trim().toLowerCase();
+            if(!q) return true;
+            return String(s.name || '').toLowerCase().indexOf(q) !== -1 || String(s.creator || '').toLowerCase().indexOf(q) !== -1;
+        })));
+        searchWrap.appendChild(searchInput);
+        card.appendChild(searchWrap);
+
         const table = createEl('table', 'survey-table');
 
         const thead = createEl('thead');
@@ -310,6 +389,51 @@
         card.appendChild(table);
         root.innerHTML = '';
         root.appendChild(card);
+
+        function renderSurveys(filtered){
+            const tbodyNew = createEl('tbody');
+            (Array.isArray(filtered) ? filtered : []).forEach(survey=>{
+                const tr = createEl('tr');
+                const tdId = createEl('td','', String(survey.id || ''));
+                const tdTitle = createEl('td','', survey.name || 'Untitled survey');
+                const tdCreator = createEl('td','', survey.creator || '');
+                const tdActions = createEl('td');
+
+                const selectBtn = createEl('button','btn small');
+                selectBtn.type = 'button';
+                selectBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-square" viewBox="0 0 16 16">\n  <path d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5z"/>\n  <path d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0"/>\n</svg>';
+                selectBtn.setAttribute('title', 'Select');
+                selectBtn.setAttribute('aria-label', 'Select');
+                selectBtn.addEventListener('click', ()=>{
+                    const code = survey.s_code || survey.code || survey.id;
+                    const origin = (window.location.origin || '');
+                    window.location.href = origin + '/html/survey_edit.html?code=' + encodeURIComponent(code);
+                });
+
+                const delBtn = createEl('button','btn btn-danger small');
+                delBtn.type = 'button';
+                delBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">\n  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>\n  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>\n</svg>';
+                delBtn.setAttribute('title', 'Delete');
+                delBtn.setAttribute('aria-label', 'Delete');
+                delBtn.addEventListener('click', ()=> deleteSurvey(survey.id, survey.name || 'this survey'));
+
+                tdActions.appendChild(selectBtn);
+                tdActions.appendChild(delBtn);
+
+                tr.appendChild(tdId);
+                tr.appendChild(tdTitle);
+                tr.appendChild(tdCreator);
+                tr.appendChild(tdActions);
+
+                tbodyNew.appendChild(tr);
+            });
+            const oldTbody = card.querySelector('table tbody');
+            if(oldTbody) oldTbody.replaceWith(tbodyNew);
+            else card.querySelector('table').appendChild(tbodyNew);
+        }
+
+        // initial render
+        renderSurveys(surveysList);
     }
 
     async function deleteSurvey(id, displayName){

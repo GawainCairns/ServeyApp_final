@@ -138,6 +138,29 @@ body > .register-container {
     border-color: var(--color-primary);
     box-shadow: var(--primary-focus-shadow);
 }
+
+/* Search controls used in admin lists */
+.search-wrap { display:flex; justify-content:flex-end; margin: 8px 0 14px 0; }
+.search-input {
+    padding:8px 12px;
+    border-radius:8px;
+    border:1px solid rgba(16,24,40,0.12);
+    background: transparent;
+    color: var(--color-text);
+    width: 320px;
+    max-width: 100%;
+    font-size: 0.95rem;
+}
+.search-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: var(--primary-focus-shadow);
+}
+.search-input::placeholder { color: rgba(0,0,0,0.45); }
+
+@media (max-width:720px) {
+    .search-wrap { justify-content: stretch; }
+    .search-input { width: 100%; }
+}
 .form .help { font-size:0.85rem; color:var(--color-muted); }
 .form .actions { display:flex; gap:8px; align-items:center; }
 
